@@ -19,6 +19,21 @@ textarea {
   min-height: 2.75rem;
 }
 
+.dark-select {
+  color-scheme: dark;
+  accent-color: #5b7cff;
+}
+
+.dark-select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.dark-select option:checked {
+  background: #3f5be0;
+  color: #ffffff;
+}
+
 @media (max-width: 640px) {
   .glass {
     border-radius: 0.875rem;

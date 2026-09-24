@@ -68,7 +68,7 @@ const GenerateTest = () => {
               <select
                 value={form.difficulty}
                 onChange={(e) => setForm({ ...form, difficulty: e.target.value })}
-                className="w-full mt-1 bg-white/5 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-brand-400"
+                className="dark-select w-full mt-1 bg-white/5 rounded-lg border border-white/10 px-3 py-2 text-slate-100 outline-none focus:ring-1 focus:ring-brand-400"
               >
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
@@ -93,7 +93,7 @@ const GenerateTest = () => {
             <select
               value={form.questionType}
               onChange={(e) => setForm({ ...form, questionType: e.target.value })}
-              className="w-full mt-1 bg-white/5 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-brand-400"
+              className="dark-select w-full mt-1 bg-white/5 rounded-lg border border-white/10 px-3 py-2 text-slate-100 outline-none focus:ring-1 focus:ring-brand-400"
             >
               <option value="mcq">MCQ</option>
               <option value="coding">Coding</option>
