@@ -34,7 +34,7 @@ const Dashboard = () => {
   if (error) return <div className="p-10 text-center text-red-400">{error}</div>;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
       <h1 className="text-2xl font-bold mb-6">Your Dashboard</h1>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
@@ -45,7 +45,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="glass rounded-2xl p-6 lg:col-span-2">
+        <div className="glass rounded-2xl p-4 sm:p-6 lg:col-span-2 min-w-0">
           <h2 className="font-semibold mb-4">Performance Over Time</h2>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={data.performanceOverTime}>
@@ -58,7 +58,7 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        <div className="glass rounded-2xl p-6">
+        <div className="glass rounded-2xl p-4 sm:p-6 min-w-0">
           <h2 className="font-semibold mb-3">Topics</h2>
           <p className="text-xs text-slate-400 mb-1">Weak</p>
           <div className="flex flex-wrap gap-2 mb-4">
@@ -83,14 +83,14 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="glass rounded-2xl p-6 mt-6">
+      <div className="glass rounded-2xl p-4 sm:p-6 mt-6">
         <h2 className="font-semibold mb-4">Recent Tests</h2>
         <div className="space-y-2">
           {data.recentTests?.length ? (
             data.recentTests.map((r) => (
-              <div key={r._id} className="flex justify-between items-center bg-white/5 rounded-lg px-4 py-3 text-sm">
-                <span>{r.test?.subject} — {r.test?.topic}</span>
-                <span className="text-brand-400 font-semibold">{r.percentage}%</span>
+              <div key={r._id} className="flex justify-between items-center gap-3 bg-white/5 rounded-lg px-3 sm:px-4 py-3 text-sm">
+                <span className="min-w-0 truncate">{r.test?.subject} — {r.test?.topic}</span>
+                <span className="text-brand-400 font-semibold shrink-0">{r.percentage}%</span>
               </div>
             ))
           ) : (

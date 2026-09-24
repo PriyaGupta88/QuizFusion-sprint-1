@@ -15,4 +15,6 @@ const chatSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+chatSchema.index({ user: 1, testContext: 1 });
+
 export default mongoose.model("Chat", chatSchema);

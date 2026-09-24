@@ -4,14 +4,17 @@ import User from "../models/User.js";
 
 export const getDashboard = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id);
-    const recentResults = await Result.find({ user: req.user._id })
-      .populate("test", "subject topic difficulty")
-      .sort({ createdAt: -1 })
-      .limit(10);
-
-    const totalTests = await Test.countDocuments({ user: req.user._id });
-    const completedTests = await Test.countDocuments({ user: req.user._id, status: "completed" });
+    const [user, recentResults, totalTests, completedTests] = await Promise.all([
+      User.findById(req.user._id).select("stats weakTopics strongTopics streak").lean(),
+      Result.find({ user: req.user._id })
+        .select("test createdAt percentage")
+        .populate("test", "subject topic difficulty")
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .lean(),
+      Test.countDocuments({ user: req.user._id }),
+      Test.countDocuments({ user: req.user._id, status: "completed" }),
+    ]);
 
     const performanceOverTime = recentResults
       .slice()

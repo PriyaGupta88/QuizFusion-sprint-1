@@ -7,10 +7,13 @@ export const register = async (req, res, next) => {
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email and password are required" });
     }
-    const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ message: "Email already registered" });
-
-    const user = await User.create({ name, email, password });
+    let user;
+    try {
+      user = await User.create({ name, email, password });
+    } catch (err) {
+      if (err.code === 11000) return res.status(400).json({ message: "Email already registered" });
+      throw err;
+    }
     res.status(201).json({
       _id: user._id,
       name: user.name,

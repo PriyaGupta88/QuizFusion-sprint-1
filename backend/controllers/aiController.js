@@ -15,7 +15,7 @@ export const chat = async (req, res, next) => {
 
     let testContextLabel = null;
     if (testId) {
-      const test = await Test.findById(testId);
+      const test = await Test.findById(testId).select("subject topic difficulty").lean();
       if (test) testContextLabel = `${test.subject} - ${test.topic} (${test.difficulty})`;
     }
 

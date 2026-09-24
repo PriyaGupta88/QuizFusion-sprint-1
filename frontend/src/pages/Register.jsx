@@ -21,12 +21,12 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-6">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 py-8">
       <motion.form
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         onSubmit={submit}
-        className="glass rounded-2xl p-8 w-full max-w-md"
+        className="glass rounded-2xl p-6 sm:p-8 w-full max-w-md"
       >
         <h1 className="text-2xl font-bold mb-1">Create your account</h1>
         <p className="text-slate-400 text-sm mb-6">Start generating AI-powered tests for free.</p>

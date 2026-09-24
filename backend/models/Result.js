@@ -38,4 +38,6 @@ const resultSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+resultSchema.index({ user: 1, createdAt: -1 });
+
 export default mongoose.model("Result", resultSchema);

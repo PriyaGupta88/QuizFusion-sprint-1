@@ -31,8 +31,8 @@ const GenerateTest = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-8">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-6 sm:p-8">
         <div className="flex items-center gap-2 mb-6">
           <Sparkles className="text-brand-400" />
           <h1 className="text-2xl font-bold">Generate a New Test</h1>
@@ -62,7 +62,7 @@ const GenerateTest = () => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm text-slate-400">Difficulty</label>
               <select

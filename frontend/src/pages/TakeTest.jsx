@@ -1,9 +1,28 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { memo, useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { Flag, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import api from "../services/api";
 import AIChatWidget from "../components/AIChatWidget";
+
+const QuizTimer = memo(({ startTime, secondsRef }) => {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const update = () => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      secondsRef.current = elapsed;
+      setSeconds(elapsed);
+    };
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [startTime, secondsRef]);
+
+  const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const ss = String(seconds % 60).padStart(2, "0");
+  return <span className="flex items-center gap-1 shrink-0"><Clock size={14} /> {mm}:{ss}</span>;
+});
 
 const TakeTest = () => {
   const { id } = useParams();
@@ -12,18 +31,13 @@ const TakeTest = () => {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [flagged, setFlagged] = useState({});
-  const [seconds, setSeconds] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const startRef = useRef(Date.now());
+  const secondsRef = useRef(0);
 
   useEffect(() => {
     api.get(`/tests/${id}`).then((res) => setTest(res.data));
   }, [id]);
-
-  useEffect(() => {
-    const t = setInterval(() => setSeconds(Math.floor((Date.now() - startRef.current) / 1000)), 1000);
-    return () => clearInterval(t);
-  }, []);
 
   if (!test) return <div className="p-10 text-center text-slate-400">Loading test...</div>;
 
@@ -38,7 +52,7 @@ const TakeTest = () => {
     try {
       const payload = {
         testId: id,
-        timeTakenSeconds: seconds,
+        timeTakenSeconds: secondsRef.current,
         answers: test.questions.map((_, i) => ({ questionIndex: i, userAnswer: answers[i] || "" })),
       };
       const { data } = await api.post("/results", payload);
@@ -48,14 +62,11 @@ const TakeTest = () => {
     }
   };
 
-  const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const ss = String(seconds % 60).padStart(2, "0");
-
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8">
-      <div className="flex justify-between items-center mb-4 text-sm text-slate-400">
-        <span>{test.subject} — {test.topic} ({test.difficulty})</span>
-        <span className="flex items-center gap-1"><Clock size={14} /> {mm}:{ss}</span>
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="flex justify-between items-start gap-3 mb-4 text-sm text-slate-400">
+        <span className="min-w-0 break-words">{test.subject} — {test.topic} ({test.difficulty})</span>
+        <QuizTimer startTime={startRef.current} secondsRef={secondsRef} />
       </div>
 
       <div className="h-1.5 bg-white/5 rounded-full mb-6 overflow-hidden">
@@ -69,10 +80,10 @@ const TakeTest = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -30 }}
           transition={{ duration: 0.25 }}
-          className="glass rounded-2xl p-6"
+          className="glass rounded-2xl p-4 sm:p-6"
         >
           <div className="flex justify-between items-start mb-4">
-            <p className="font-medium">
+            <p className="font-medium min-w-0 break-words">
               Q{index + 1}. {q.questionText}
             </p>
             <button onClick={toggleFlag} className={flagged[index] ? "text-amber-400" : "text-slate-500"}>
@@ -125,11 +136,11 @@ const TakeTest = () => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="flex justify-between items-center mt-6">
+      <div className="flex justify-between items-center gap-3 mt-6">
         <button
           disabled={index === 0}
           onClick={() => setIndex((i) => i - 1)}
-          className="flex items-center gap-1 glass px-4 py-2 rounded-lg disabled:opacity-30"
+          className="flex items-center gap-1 glass px-3 sm:px-4 py-2.5 rounded-lg disabled:opacity-30 min-h-11"
         >
           <ChevronLeft size={16} /> Previous
         </button>
@@ -138,14 +149,14 @@ const TakeTest = () => {
           <button
             onClick={submit}
             disabled={submitting}
-            className="bg-brand-500 hover:bg-brand-600 px-6 py-2 rounded-lg font-semibold disabled:opacity-50"
+            className="bg-brand-500 hover:bg-brand-600 px-3 sm:px-6 py-2.5 rounded-lg font-semibold disabled:opacity-50 min-h-11 text-sm sm:text-base"
           >
             {submitting ? "Submitting & grading with AI..." : "Submit Test"}
           </button>
         ) : (
           <button
             onClick={() => setIndex((i) => i + 1)}
-            className="flex items-center gap-1 bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-lg"
+            className="flex items-center gap-1 bg-brand-500 hover:bg-brand-600 px-3 sm:px-4 py-2.5 rounded-lg min-h-11"
           >
             Next <ChevronRight size={16} />
           </button>
