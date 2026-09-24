@@ -3,8 +3,17 @@ import Groq from "groq-sdk";
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
-// Use a current Groq-hosted model. Swap the model string if Groq deprecates it.
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
+
+function isModelNotFoundError(error) {
+  return error.status === 404 && (error.code === "model_not_found" || error.error?.error?.code === "model_not_found");
+}
+
+function createModelError() {
+  const modelError = new Error(`The configured Groq model "${MODEL}" is unavailable. Set GROQ_MODEL to a supported Groq model.`);
+  modelError.statusCode = 502;
+  return modelError;
+}
 
 /**
  * Strips markdown code fences etc. and parses JSON safely.
@@ -25,16 +34,23 @@ function safeParseJSON(raw) {
 }
 
 async function callGroq(systemPrompt, userPrompt, { json = true } = {}) {
-  const completion = await groq.chat.completions.create({
-    model: MODEL,
-    temperature: 0.6,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
-    ...(json ? { response_format: { type: "json_object" } } : {}),
-  });
-  return completion.choices[0].message.content;
+  try {
+    const completion = await groq.chat.completions.create({
+      model: MODEL,
+      temperature: 0.6,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      ...(json ? { response_format: { type: "json_object" } } : {}),
+    });
+    return completion.choices[0].message.content;
+  } catch (error) {
+    if (isModelNotFoundError(error)) {
+      throw createModelError();
+    }
+    throw error;
+  }
 }
 
 /**
@@ -116,16 +132,23 @@ Respond in Markdown. Use fenced code blocks with language tags for any code.
 ${testContext ? `The student is currently working on a test about: ${testContext}. Use this as context when relevant.` : ""}
 Keep answers focused and not overly long unless the student asks for depth.`;
 
-  const completion = await groq.chat.completions.create({
-    model: MODEL,
-    temperature: 0.7,
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...history.map((m) => ({ role: m.role, content: m.content })),
-      { role: "user", content: message },
-    ],
-  });
-  return completion.choices[0].message.content;
+  try {
+    const completion = await groq.chat.completions.create({
+      model: MODEL,
+      temperature: 0.7,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...history.map((m) => ({ role: m.role, content: m.content })),
+        { role: "user", content: message },
+      ],
+    });
+    return completion.choices[0].message.content;
+  } catch (error) {
+    if (isModelNotFoundError(error)) {
+      throw createModelError();
+    }
+    throw error;
+  }
 }
 
 /**
