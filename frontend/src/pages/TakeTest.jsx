@@ -93,23 +93,30 @@ const TakeTest = () => {
 
           {(q.type === "mcq" || q.type === "truefalse") && (
             <div className="space-y-2">
-              {q.options.map((opt) => (
+              {q.options.map((opt, optionIndex) => {
+                const optionId = `q-${index}-option-${optionIndex}`;
+                const selected = answers[index] === opt;
+
+                return (
                 <label
                   key={opt}
-                  className={`block rounded-lg px-3 py-2 cursor-pointer border transition ${
-                    answers[index] === opt ? "border-brand-400 bg-brand-500/10" : "border-white/5 bg-white/5"
+                  htmlFor={optionId}
+                  className={`flex w-full min-h-11 items-center gap-3 rounded-lg border px-3 py-2.5 cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-400/60 ${
+                    selected ? "border-brand-400 bg-brand-500/10" : "border-white/5 bg-white/5"
                   }`}
                 >
                   <input
+                    id={optionId}
                     type="radio"
                     name={`q-${index}`}
-                    className="mr-2"
-                    checked={answers[index] === opt}
+                    className="!m-0 !h-4 !min-h-0 !w-4 shrink-0 accent-brand-500"
+                    checked={selected}
                     onChange={() => setAnswer(opt)}
                   />
-                  {opt}
+                  <span className="min-w-0 flex-1 break-words leading-normal">{opt}</span>
                 </label>
-              ))}
+                );
+              })}
             </div>
           )}
 
